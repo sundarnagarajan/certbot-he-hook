@@ -159,4 +159,21 @@ if [ ! -z "$CERTBOT_AUTH_OUTPUT" ]; then
   curl -L --silent --show-error --cookie "$HE_COOKIE" \
     --form "menu=edit_zone" \
     --form "hosted_dns_zoneid=$HE_ZONEID" \
-    --form "hosted_dns_re
+    --form "hosted_dns_recordid=$CERTBOT_AUTH_OUTPUT" \
+    --form "hosted_dns_editzone=1" \
+    --form "hosted_dns_delrecord=1" \
+    --form "hosted_dns_delconfirm=delete" \
+    --form "hosted_dns_editzone=1" \
+    "https://dns.he.net/" \
+    | grep '<div id="dns_status" onClick="hideThis(this);">Successfully removed record.</div>' \
+    > /dev/null
+  DELETE_OK=$?
+  if [ $DELETE_OK -ne 0 ]; then
+    echo \
+      "Could not clean (remove) up the record. Please go to HE" \
+      "administration interface and clean it by hand." \
+      1>&2
+  fi
+fi
+
+# vim: et:ts=2:sw=2:
